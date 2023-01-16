@@ -1,30 +1,18 @@
 import React, {useEffect, useState} from 'react';
 import api from "../../Api/Api"
-//import { useEffect, useState } from 'react/cjs/react.production.min';
+import Nominee from '../Nominee/Nominee';
+import Modal from '../Modal/Modal';
+import "./Ballot.css";
 
 const Ballot = () => {
 
   const [ballots, setBallots] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selected, setSelected] = useState({});
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   useEffect(() => {
-    // const fetchBallots = async () => {
-    //   try {
-    //     setLoading(true);
-    //     const response = await fetch('http://localhost:3000/api/getBallotData');
-    //     if(response.ok) {
-    //       const data = await response.json();
-    //       setBallots(data);
-    //       setLoading(false);
-    //     }
-
-    //   }
-    //   catch(error) {
-    //     console.error(error);
-    //   }
-    // }
-
-    // fetchBallots();
     setLoading(true);
     api.getBallotData()
       .then((data) => {
@@ -37,14 +25,58 @@ const Ballot = () => {
 
   }, []);
 
+  const handleSubmit = () => {
+    
+    let valid = true;
+    for(const category of ballots.items) {
+      if(selected[category.title] === undefined) {
+        valid = false;
+        break;
+      }
+    }
+
+    if(valid) {
+      setModalMessage("SUCCESS");
+    }
+    else {
+      setModalMessage("Please Vote in Every Category")
+    }
+    setModalOpen(true);
+  }
+
   return (
     <div className='ballot'>
-      {!loading ? ballots.items.map((category) => {
+      <h3>Awards 2021</h3>
+      {!loading ? ballots.items && ballots.items.map((category) => {
 
           return(
-            <div>{category.title}</div>
+            <React.Fragment key={category.id}>
+              <div className="category">{category.title}</div>
+              <div className="ballot-grid">
+                {category.items.map((nominee) => {
+                  return(<Nominee
+                    key={nominee.id} 
+                    title={nominee.title}
+                    image={nominee.photoUrL}
+                    isSelected={selected[category.title] === nominee.title}
+                    onClick={() => {
+                      setSelected({
+                        ...selected,
+                        [category.title]: nominee.title
+                      });
+                    }}
+                  />);
+                })}
+              </div>
+            </React.Fragment>
           );
         }): null}
+      <button className="ballot-submit" type="button" onClick={handleSubmit}>Submit</button>
+      <Modal
+          isOpen={modalOpen}
+          close={setModalOpen}
+          text={modalMessage}
+      />
     </div>
   )
 }

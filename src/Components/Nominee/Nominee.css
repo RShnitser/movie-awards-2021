@@ -1,0 +1,27 @@
+.nominee-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #009B86;
+    border: solid black 1px;
+    border-radius: 15px;
+}
+
+.nominee-container:hover {
+    color: #CCCCCCCC;
+    background-color: #34AC9C;
+}
+
+.nominee-selected {
+    background-color: #009BC6;
+}
+
+.nominee-photo {
+    max-width: 200px;
+    margin: 0 auto;
+}
+
+/* .nominee-title {
+    color: yellow;
+} */
